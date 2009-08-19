@@ -1,0 +1,8 @@
+phpFluidDB
+==========
+
+FluidDB client for PHP.
+
+For now, just a port of sanxiyn's python implementation.
+
+
