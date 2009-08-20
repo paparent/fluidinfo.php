@@ -3,12 +3,20 @@
 class FluidDB
 {
 	private $prefix = 'http://fluiddb.fluidinfo.com';
+	private $credentials = '';
+
+	public function setCredentials($creds)
+	{
+		$this->credentials = $creds;
+	}
+
 
 	/* Namespaces */
 
 	public function createNamespace($path, $namespace, $description)
 	{
-		//TODO:POST
+		return $this->post('/namespaces/'.$path, '{"name":"'.$namespace.'","description":"'.$description.'"}');
+		//TODO:check status
 	}
 
 	public function getNamespace($namespace, $returnDescription = false, $returnNamespaces = false, $returnTags = false)
@@ -41,7 +49,8 @@ class FluidDB
 
 	public function createObject($about = null)
 	{
-		//TODO:POST
+		return $this->post('/objects', '{"about":"'.$about.'"}');
+		//TODO:check status
 	}
 
 	public function query($query)
@@ -95,9 +104,10 @@ class FluidDB
 
 	/* Tags */
 	
-	public function createTag($tag, $description, $indexed = false)
+	public function createTag($path, $tag, $description, $indexed = 'false')
 	{
-		//TODO:POST
+		return $this->post('/tags/'.$path, '{"name":"'.$tag.'","description":"'.$description.'","indexed":"'.$indexed.'"}');
+		//TODO:check status
 	}
 
 	public function getTag($tag, $returnDescription = false)
@@ -144,6 +154,28 @@ class FluidDB
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept: application/json'));
+		$output = curl_exec($ch);
+		$infos = curl_getinfo($ch);
+		curl_close($ch);
+
+		if ($infos['content_type'] == 'application/json') {
+			$output = json_decode($output);
+		}
+
+		return array($infos['http_code'], $output);
+	}
+
+	public function post($path, $value)
+	{
+		$url = $this->prefix . $path;
+
+		#echo 'URL: ', $url, "\n";
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $value);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept: application/json','Content-Type: application/json'));
+		curl_setopt($ch, CURLOPT_USERPWD, $this->credentials);
 		$output = curl_exec($ch);
 		$infos = curl_getinfo($ch);
 		curl_close($ch);

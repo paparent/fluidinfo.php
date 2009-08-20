@@ -1,8 +1,11 @@
 <?php
 require 'fluiddb.php';
+require 'config.php';
 
 $fldb = new FluidDB;
+$fldb->setCredentials($username.':'.$password);
 
+/*
 $userinfos = $fldb->getUser('paparent');
 echo 'User ID: ', $userinfos->id, "\n";
 
@@ -27,4 +30,18 @@ print_r($out);
 $out = $fldb->get('/objects/afe0ac12-c0be-494a-adcd-0d192f248c7e/fluiddb/users/name');
 print_r($out);
  */
+
+/*echo "Creating 1st object!\n";
+$out = $fldb->createObject('First object created by paparent');
+print_r($out);
+*/
+
+/*$out = $fldb->createNamespace('paparent', 'test', 'Test namespace of paparent');
+print_r($out);
+*/
+
+/*$out = $fldb->createTag('paparent/test', 'first', 'First tag of paparent');
+print_r($out);
+*/
+
 
