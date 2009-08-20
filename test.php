@@ -44,4 +44,21 @@ print_r($out);
 print_r($out);
 */
 
+/*$out = $fldb->deleteNamespace('paparent/test2');
+print_r($out);
+*/
+
+/*$out = $fldb->deleteTag('paparent/test/first');
+print_r($out);
+*/
+
+/*$out = $fldb->updateNamespace('paparent/test', 'Testing namespace of paparent');
+print_r($out);
+*/
+
+$out = $fldb->getNamespace('paparent/test', true, true, true);
+print_r($out);
+
+
+
 

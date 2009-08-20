@@ -37,12 +37,14 @@ class FluidDB
 
 	public function updateNamespace($namespace, $description)
 	{
-		//TODO:PUT
+		return $this->put('/namespaces/'.$namespace, '{"description":"'.$description.'"}');
+		//TODO:check status
 	}
 
 	public function deleteNamespace($namespace)
 	{
-		//TODO:DELETE
+		return $this->delete('/namespaces/'.$namespace);
+		//TODO:check status
 	}
 
 	/* Objects */
@@ -91,7 +93,8 @@ class FluidDB
 
 	public function deleteObjectTag($id, $tag)
 	{
-		//TODO:DELETE
+		return $this->delete('/objects/'.$id.'/'.$tag);
+		//TODO:check status
 	}
 
 	/* Permissions */
@@ -123,12 +126,14 @@ class FluidDB
 
 	public function updateTag($tag, $description)
 	{
-		//TODO:PUT
+		return $this->put('/tags/'.$tag, '{"description":"'.$description.'"}');
+		//TODO:check status
 	}
 
 	public function deleteTag($tag)
 	{
-		//TODO:DELETE
+		return $this->delete('/tags/'.$tag);
+		//TODO:check status
 	}
 
 	/* Users */
@@ -175,6 +180,49 @@ class FluidDB
 		curl_setopt($ch, CURLOPT_POST, true);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $value);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept: application/json','Content-Type: application/json'));
+		curl_setopt($ch, CURLOPT_USERPWD, $this->credentials);
+		$output = curl_exec($ch);
+		$infos = curl_getinfo($ch);
+		curl_close($ch);
+
+		if ($infos['content_type'] == 'application/json') {
+			$output = json_decode($output);
+		}
+
+		return array($infos['http_code'], $output);
+	}
+
+	public function put($path, $value)
+	{
+		$url = $this->prefix . $path;
+
+		#echo 'URL: ', $url, "\n";
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $value);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept: application/json','Content-Type: application/json'));
+		curl_setopt($ch, CURLOPT_USERPWD, $this->credentials);
+		$output = curl_exec($ch);
+		$infos = curl_getinfo($ch);
+		curl_close($ch);
+
+		if ($infos['content_type'] == 'application/json') {
+			$output = json_decode($output);
+		}
+
+		return array($infos['http_code'], $output);
+	}
+
+	public function delete($path)
+	{
+		$url = $this->prefix . $path;
+
+		#echo 'URL: ', $url, "\n";
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept: application/json'));
 		curl_setopt($ch, CURLOPT_USERPWD, $this->credentials);
 		$output = curl_exec($ch);
 		$infos = curl_getinfo($ch);
