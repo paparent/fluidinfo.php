@@ -5,10 +5,18 @@ require 'config.php';
 $fldb = new FluidDB;
 $fldb->setCredentials($username.':'.$password);
 
-/*
+# $out = $fldb->(); print_r($out);
+#$out = $fldb->createTag('paparent', 'email', 'E-Mail'); print_r($out);
+
 $userinfos = $fldb->getUser('paparent');
 echo 'User ID: ', $userinfos->id, "\n";
 
+#$out = $fldb->tagObject($userinfos->id, 'paparent/email', 'paparent@gmail.com'); print_r($out);
+
+# Doesnt't work :(
+#$out = $fldb->getObject($userinfos->id, true); print_r($out);
+
+/*
 $username = $fldb->getObjecttag($userinfos->id, 'fluiddb/users/username');
 echo 'Username: ', $username, "\n";
 
@@ -31,33 +39,20 @@ $out = $fldb->get('/objects/afe0ac12-c0be-494a-adcd-0d192f248c7e/fluiddb/users/n
 print_r($out);
  */
 
-/*echo "Creating 1st object!\n";
-$out = $fldb->createObject('First object created by paparent');
-print_r($out);
-*/
+# $out = $fldb->createObject('First object created by paparent'); print_r($out);
 
-/*$out = $fldb->createNamespace('paparent', 'test', 'Test namespace of paparent');
-print_r($out);
-*/
+# $out = $fldb->createNamespace('paparent', 'test', 'Test namespace of paparent'); print_r($out);
 
-/*$out = $fldb->createTag('paparent/test', 'first', 'First tag of paparent');
-print_r($out);
-*/
+# $out = $fldb->createTag('paparent/test', 'first', 'First tag of paparent'); print_r($out);
 
-/*$out = $fldb->deleteNamespace('paparent/test2');
-print_r($out);
-*/
+# $out = $fldb->deleteNamespace('paparent/test2'); print_r($out);
 
-/*$out = $fldb->deleteTag('paparent/test/first');
-print_r($out);
-*/
+# $out = $fldb->deleteTag('paparent/test/first'); print_r($out);
 
-/*$out = $fldb->updateNamespace('paparent/test', 'Testing namespace of paparent');
-print_r($out);
-*/
 
-$out = $fldb->getNamespace('paparent/test', true, true, true);
-print_r($out);
+# $out = $fldb->updateNamespace('paparent/test', 'Testing namespace of paparent'); print_r($out);
+
+# $out = $fldb->getNamespace('paparent/test', true, true, true); print_r($out);
 
 
 
