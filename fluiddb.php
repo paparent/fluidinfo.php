@@ -5,6 +5,11 @@ class FluidDB
 	private $prefix = 'http://fluiddb.fluidinfo.com';
 	private $credentials = '';
 
+	public function setPrefix($prefix)
+	{
+		$this->prefix = $prefix;
+	}
+
 	public function setCredentials($creds)
 	{
 		$this->credentials = $creds;
