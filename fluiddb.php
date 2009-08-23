@@ -104,7 +104,7 @@ class FluidDB
 
 	//TODO:OBJECT HEAD
 
-	public function tagObject($id, $tag, $value, $valueEncoding = null, $valueType = null, $format = null)
+	public function tagObject($id, $tag, $value, $valueEncoding = null, $valueType = null)
 	{
 		$payload = array(
 			'value' => $value
@@ -116,7 +116,7 @@ class FluidDB
 		if ($valueType)
 			$payload['valueType'] = $valueType;
 
-		return $this->put('/objects/' . $id . '/' . $tag, $payload);
+		return $this->put('/objects/' . $id . '/' . $tag, $payload, array('format' => 'json'));
 		//TODO:check status
 	}
 
@@ -209,9 +209,13 @@ class FluidDB
 		return array($infos['http_code'], $output);
 	}
 
-	public function post($path, $payload)
+	public function post($path, $payload, $params = null)
 	{
 		$url = $this->prefix . $path;
+
+		if ($params) {
+			$url .= '?' . $this->array2url($params);
+		}
 
 		$value = json_encode($payload);
 
@@ -233,9 +237,13 @@ class FluidDB
 		return array($infos['http_code'], $output);
 	}
 
-	public function put($path, $payload)
+	public function put($path, $payload, $params = null)
 	{
 		$url = $this->prefix . $path;
+
+		if ($params) {
+			$url .= '?' . $this->array2url($params);
+		}
 
 		$value = json_encode($payload);
 
