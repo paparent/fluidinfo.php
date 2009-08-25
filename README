@@ -1,8 +1,19 @@
 phpFluidDB
 ==========
 
-FluidDB client for PHP.
+FluidDB (http://www.fluidinfo.com/fluiddb) client for PHP. 
 
-For now, just a port of sanxiyn's python implementation.
+Dependencies
+============
 
+You need PHP's JSON extension which is bundled by default with 
+PHP 5.2.x. It can be installed too via PECL. The cURL extension
+is also needed (part of most distribution).
+
+phpFluidDBExplorer
+==================
+
+First application developed with the library. You can navigate into
+namespaces and tags, seeing description, and do queries. More to come
+like tagging objects and much more.
 
