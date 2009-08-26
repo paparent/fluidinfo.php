@@ -1,12 +1,12 @@
 <?php
-require 'fluiddb.php';
+require 'FluidDB.php';
 require 'config.php';
 
 define(ME, $_SERVER['PHP_SELF']);
 
 $fdb = new FluidDB;
 $fdb->setPrefix($config['prefix']);
-$fdb->setCredentials($config['username'] . ':' . $config['password']);
+$fdb->setCredentials($config['username'], $config['password']);
 
 if (isset($_REQUEST['action']) && !empty($_REQUEST['action'])) {
 	switch ($_REQUEST['action']) {
