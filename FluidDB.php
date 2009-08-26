@@ -341,95 +341,97 @@ class FluidDB
 
 	/* Utils */
 
+	/**
+	 * Make a GET call
+	 *
+	 * @param $path
+	 * @param $params
+	 * @return object
+	 */
 	public function get($path, $params = null)
 	{
-		$url = $this->prefix . $path;
-
-		if ($params) {
-			$url .= '?' . $this->array2url($params);
-		}
-
-		#echo 'URL: ', $url, "\n";
-		$ch = curl_init($url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept: application/json'));
-		$output = curl_exec($ch);
-		$infos = curl_getinfo($ch);
-		curl_close($ch);
-
-		if ($infos['content_type'] == 'application/json') {
-			$output = json_decode($output);
-		}
-
-		return array($infos['http_code'], $output);
+		return $this->call('GET', $path, $params);
 	}
 
+	/**
+	 * Make a POST call
+	 *
+	 * @param $path
+	 * @param $payload
+	 * @param $params
+	 * @return object
+	 */
 	public function post($path, $payload, $params = null)
 	{
-		$url = $this->prefix . $path;
-
-		if ($params) {
-			$url .= '?' . $this->array2url($params);
-		}
-
-		$value = json_encode($payload);
-
-		#echo 'URL: ', $url, "\n";
-		$ch = curl_init($url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_POST, true);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $value);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept: application/json','Content-Type: application/json'));
-		curl_setopt($ch, CURLOPT_USERPWD, $this->credentials);
-		$output = curl_exec($ch);
-		$infos = curl_getinfo($ch);
-		curl_close($ch);
-
-		if ($infos['content_type'] == 'application/json') {
-			$output = json_decode($output);
-		}
-
-		return array($infos['http_code'], $output);
+		return $this->call('POST', $path, $params, $payload);
 	}
 
+	/**
+	 * Make a PUT call
+	 *
+	 * @param $path
+	 * @param $payload
+	 * @param $params
+	 * @return object
+	 */
 	public function put($path, $payload, $params = null)
 	{
+		return $this->call('PUT', $path, $params, $payload);
+	}
+
+	/**
+	 * Make a DELETE call
+	 *
+	 * @param $path
+	 * @return object
+	 */
+	public function delete($path)
+	{
+		return $this->call('DELETE', $path);
+	}
+
+	/**
+	 * Make a request to FluidDB API
+	 *
+	 * @param $method
+	 * @param $path
+	 * @param $params
+	 * @param $payload
+	 * @return object
+	 */
+	public function call($method, $path, $params = null, $payload = null)
+	{
 		$url = $this->prefix . $path;
 
 		if ($params) {
 			$url .= '?' . $this->array2url($params);
 		}
 
-		$value = json_encode($payload);
-
-		#echo 'URL: ', $url, "\n";
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $value);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept: application/json','Content-Type: application/json'));
-		curl_setopt($ch, CURLOPT_USERPWD, $this->credentials);
-		$output = curl_exec($ch);
-		$infos = curl_getinfo($ch);
-		curl_close($ch);
-
-		if ($infos['content_type'] == 'application/json') {
-			$output = json_decode($output);
+		
+		if ($this->credentials) {
+			curl_setopt($ch, CURLOPT_USERPWD, $this->credentials);
 		}
 
-		return array($infos['http_code'], $output);
-	}
+		$headers = array('Accept: application/json');
 
-	public function delete($path)
-	{
-		$url = $this->prefix . $path;
+		if ($method != 'GET') {
+			if ($payload) {
+				$headers[] = 'Content-Type: application/json';
+				$payload = json_encode($payload);
+				curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+			}
+			if ($method == 'POST') {
+				curl_setopt($ch, CURLOPT_POST, true);
+			}
+			else {
+				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+			}
+		}
 
-		#echo 'URL: ', $url, "\n";
-		$ch = curl_init($url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept: application/json'));
-		curl_setopt($ch, CURLOPT_USERPWD, $this->credentials);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
 		$output = curl_exec($ch);
 		$infos = curl_getinfo($ch);
 		curl_close($ch);
