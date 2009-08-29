@@ -79,8 +79,9 @@ class FluidDB
 			'description' => $description
 		);
 
-		return $this->post('/namespaces/' . $path, $payload);
-		//TODO:check status
+		list($status, $response) = $this->post('/namespaces/' . $path, $payload);
+
+		return ($status == 201) ? $response : $status;
 	}
 
 	/**
@@ -102,10 +103,9 @@ class FluidDB
 		if ($returnTags)
 			$params['returnTags'] = 'true';
 
-		list($status, $infos) = $this->get('/namespaces/' . $namespace, $params);
+		list($status, $response) = $this->get('/namespaces/' . $namespace, $params);
 
-		//TODO:check status
-		return $infos;
+		return ($status == 200) ? $response : $status;
 	}
 
 	/**
@@ -121,8 +121,9 @@ class FluidDB
 			'description' => $description
 		);
 
-		return $this->put('/namespaces/' . $namespace, $payload);
-		//TODO:check status
+		list($status, $response) = $this->put('/namespaces/' . $namespace, $payload);
+
+		return ($status == 204) ? $response : $status;
 	}
 
 	/**
@@ -133,8 +134,9 @@ class FluidDB
 	 */
 	public function deleteNamespace($namespace)
 	{
-		return $this->delete('/namespaces/' . $namespace);
-		//TODO:check status
+		list($status, $response) = $this->delete('/namespaces/' . $namespace);
+
+		return ($status == 204) ? $response : $status;
 	}
 
 	/* Objects */
@@ -151,8 +153,9 @@ class FluidDB
 			'about' => $about
 		);
 
-		return $this->post('/objects', $payload);
-		//TODO:check status
+		list($status, $response) = $this->post('/objects', $payload);
+
+		return ($status == 201) ? $response : $status;
 	}
 
 	/**
@@ -163,9 +166,9 @@ class FluidDB
 	 */
 	public function query($query)
 	{
-		list($status, $result) = $this->get('/objects', array('query' => $query));
-		//TODO:check status
-		return $result;
+		list($status, $response) = $this->get('/objects', array('query' => $query));
+
+		return ($status == 200) ? $response : $status;
 	}
 
 	/**
@@ -181,9 +184,9 @@ class FluidDB
 		if ($showAbout)
 			$params['showAbout'] = 'true';
 
-		list($status, $infos) = $this->get('/objects/' . $id, $params);
-		//TODO:check status
-		return $infos;
+		list($status, $response) = $this->get('/objects/' . $id, $params);
+
+		return ($status == 200) ? $response : $status;
 	}
 
 	/**
@@ -200,9 +203,8 @@ class FluidDB
 		if ($format)
 			$params['format'] = $format;
 
-		list($status, $infos) = $this->get('/objects/' . $id . '/' . $tag, $params);
-		//TODO:check status
-		return $infos;
+		list($status, $response) = $this->get('/objects/' . $id . '/' . $tag, $params);
+		return ($status == 200) ? $response : $status;
 	}
 
 	//TODO:OBJECT HEAD
@@ -229,8 +231,9 @@ class FluidDB
 		if ($valueType)
 			$payload['valueType'] = $valueType;
 
-		return $this->put('/objects/' . $id . '/' . $tag, $payload, array('format' => 'json'));
-		//TODO:check status
+		list($status, $response) = $this->put('/objects/' . $id . '/' . $tag, $payload, array('format' => 'json'));
+
+		return ($status == 204) ? $response : $status;
 	}
 
 	/**
@@ -242,8 +245,9 @@ class FluidDB
 	 */
 	public function deleteObjectTag($id, $tag)
 	{
-		return $this->delete('/objects/' . $id . '/' . $tag);
-		//TODO:check status
+		list($status, $response) = $this->delete('/objects/' . $id . '/' . $tag);
+
+		return ($status == 204) ? $response : $status;
 	}
 
 	/* Permissions */
@@ -273,8 +277,9 @@ class FluidDB
 			'indexed' => $indexed
 		);
 
-		return $this->post('/tags/' . $path, $payload);
-		//TODO:check status
+		list($status, $response) = $this->post('/tags/' . $path, $payload);
+
+		return ($status == 201) ? $response : $status;
 	}
 
 	/**
@@ -290,9 +295,9 @@ class FluidDB
 		if ($returnDescription)
 			$params['returnDescription'] = 'true';
 
-		list($status, $infos) = $this->get('/tags/' . $tag, $params);
-		//TODO:check status
-		return $infos;
+		list($status, $response) = $this->get('/tags/' . $tag, $params);
+
+		return ($status == 200) ? $response : $status;
 	}
 
 	/**
@@ -308,8 +313,9 @@ class FluidDB
 			'description' => $description
 		);
 
-		return $this->put('/tags/' . $tag, $payload);
-		//TODO:check status
+		list($status, $response) = $this->put('/tags/' . $tag, $payload);
+
+		return ($status == 204) ? $response : $status;
 	}
 
 	/**
@@ -320,8 +326,9 @@ class FluidDB
 	 */
 	public function deleteTag($tag)
 	{
-		return $this->delete('/tags/' . $tag);
-		//TODO:check status
+		list($status, $response) = $this->delete('/tags/' . $tag);
+
+		return ($status == 204) ? $response : $status;
 	}
 
 	/* Users */
@@ -334,9 +341,9 @@ class FluidDB
 	 */
 	public function getUser($username)
 	{
-		list($status, $infos) = $this->get('/users/' . $username);
-		//TODO:check status
-		return $infos;
+		list($status, $response) = $this->get('/users/' . $username);
+
+		return ($status == 200) ? $response : $status;
 	}
 
 	/* Utils */
