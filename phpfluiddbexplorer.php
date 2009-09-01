@@ -19,6 +19,7 @@ if (isset($_REQUEST['action']) && !empty($_REQUEST['action'])) {
 			$value = 0 + $value;
 		}
 		$fdb->tagObject($_REQUEST['oid'], $_REQUEST['tag'], $value);
+		echo '<li>', $_REQUEST['tag'], ': ', $value, ' ', button_tagvalue($_REQUEST['oid'], $_REQUEST['tag']), '</li>';
 		break;
 	default:
 		break;
@@ -82,7 +83,7 @@ function showObject($oid)
 	$objectinfo = $fdb->getObject($oid, true);
 	echo '<h3>Object infos</h3><p>about: ' . $objectinfo->about . '</p>';
 	if ($objectinfo->tagPaths) {
-		echo '<ul>';
+		echo '<ul class="tagvalues">';
 		foreach ($objectinfo->tagPaths as $tag) {
 			$tagvalue = $fdb->getObjectTag($oid, $tag);
 			echo '<li>' . $tag . ': ';
@@ -93,9 +94,9 @@ function showObject($oid)
 				echo '<em>to be parsed</em>';
 				print_r($tagvalue);
 			}
-			echo ' <a href="' . ME . '?action=tagobject&amp;oid=' . $oid . '&amp;tag=' . $tag . '" class="ajax update">update</a> <a href="' . ME . '?action=removeobjecttag&amp;oid=' . $oid . '&amp;tag=' . $tag .'" class="ajax" style="color:red">remove</a></li>';
+			echo ' ', button_tagvalue($oid, $tag);
 		}
-		echo '<li><a href="' . ME . '?action=tagobject&amp;oid=' . $oid . '" class="ajax newtag">add new tag</a></li>';
+		echo '<li class="last"><a href="' . ME . '?action=tagobject&amp;oid=' . $oid . '" class="add">add new tag</a></li>';
 		echo '</ul>';
 	}
 }
@@ -131,19 +132,19 @@ function page_footer()
 </div>
 <script type="text/javascript">
 $(function(){
-	$('a.ajax').click(function(){
+	$('.tagvalues a').live('click', function(){
 		var t = $(this);
-		if (t.hasClass('newtag')) {
+		if (t.hasClass('add')) {
 			var tag = prompt('Enter the tag name', '');
 			var value = prompt('Enter the value', '');
-			$.post(t.attr('href'), {tag:tag, value:value}, function(){location.reload();});
+			$.post(t.attr('href'), {tag:tag, value:value}, function(data){$(data).insertBefore(".tagvalues .last");});
 		}
-		if (t.hasClass('update')) {
-			var value = prompt('Enter the value', '');
-			$.post(t.attr('href'), {value:value}, function(){location.reload();});
+		else if (t.hasClass('update')) {
+				var value = prompt('Enter the value', '');
+			$.post(t.attr('href'), {value:value}, function(data){t.parent().replaceWith(data);});
 		}
-		else {
-			$.get(t.attr('href'), {}, function(){location.reload();});
+		else if (t.hasClass('remove')) {
+			$.get(t.attr('href'), {}, function(){t.parent().remove();});
 		}
 		return false;
 	});
@@ -151,5 +152,10 @@ $(function(){
 </script>
 </body></html>
 <?php
+}
+
+function button_tagvalue($oid, $tag)
+{
+	return '<a href="' . ME . '?action=tagobject&amp;oid=' . $oid . '&amp;tag=' . $tag . '" class="update">update</a> <a href="' . ME . '?action=removeobjecttag&amp;oid=' . $oid . '&amp;tag=' . $tag .'" class="remove" style="color:red">remove</a>';
 }
 
