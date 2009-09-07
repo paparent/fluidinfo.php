@@ -11,15 +11,42 @@ $fdb->setCredentials($config['username'], $config['password']);
 if (isset($_REQUEST['action']) && !empty($_REQUEST['action'])) {
 	switch ($_REQUEST['action']) {
 	case 'removeobjecttag':
-		$fdb->deleteObjectTag($_REQUEST['oid'], $_REQUEST['tag']);
+		$ret = $fdb->deleteObjectTag($_REQUEST['oid'], $_REQUEST['tag']);
+		if (!is_numeric($ret)) {
+			echo '{"success":true}';
+		}
+		else {
+			$json = array("success" => false);
+			switch ($ret) {
+			case 401: $message = 'Unauthorized'; break;
+			case 404: $message = 'Not found'; break;
+			}
+			$json['message'] = $message;
+			echo json_encode($json);
+		}
 		break;
 	case 'tagobject':
 		$value = $_REQUEST['value'];
-		if (preg_match('/^-?\d+$/', $value)) {
+		if (is_numeric($value)) {
 			$value = 0 + $value;
 		}
-		$fdb->tagObject($_REQUEST['oid'], $_REQUEST['tag'], $value);
-		echo '<li>', $_REQUEST['tag'], ': ', $value, ' ', button_tagvalue($_REQUEST['oid'], $_REQUEST['tag']), '</li>';
+		$ret = $fdb->tagObject($_REQUEST['oid'], $_REQUEST['tag'], $value);
+		if (!is_numeric($ret)) {
+			$json = array("success" => true);
+			$json['html'] = '<li>' . $_REQUEST['tag'] . ': ' . $value . ' ' . button_tagvalue($_REQUEST['oid'], $_REQUEST['tag']) . '</li>';
+			echo json_encode($json);
+		}
+		else {
+			$json = array("success" => false);
+			switch ($ret) {
+			case 401: $message = 'Unauthorized'; break;
+			case 404: $message = 'Tag not found'; break;
+			case 406: $message = 'Not acceptable'; break;
+			case 400: $message = 'Bad request'; break;
+			}
+			$json['message'] = $message;
+			echo json_encode($json);
+		}
 		break;
 	default:
 		break;
@@ -120,7 +147,11 @@ function doQuery($q)
 
 function page_header()
 {
-	echo '<!doctype html><html><head><title>phpFluidDBExplorer</title><script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script></head><body>';
+	echo '<!doctype html><html><head><title>phpFluidDBExplorer</title>';
+	echo '<link rel="stylesheet" type="text/css" href="cssjs/jquery.jgrowl.css">';
+	echo '<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>';
+	echo '<script type="text/javascript" src="cssjs/jquery.jgrowl.js"></script>';
+	echo '</head><body>';
 	echo '<h1>phpFluidDBExplorer</h1><div id="nav"><a href="' . ME . '">home</a></div>';
 	echo '<form action="' . ME . '" method="get" id="formquery"><input type="text" name="q" id="q"> <input type="submit" value="Query!"></form>';
 	echo '<div id="content">';
@@ -137,14 +168,38 @@ $(function(){
 		if (t.hasClass('add')) {
 			var tag = prompt('Enter the tag name', '');
 			var value = prompt('Enter the value', '');
-			$.post(t.attr('href'), {tag:tag, value:value}, function(data){$(data).insertBefore(".tagvalues .last");});
+			$.post(t.attr('href'), {tag:tag, value:value},
+				function(data) {
+					if (data.success) {
+						$(data.html).insertBefore(".tagvalues .last");
+					}
+					else {
+						$.jGrowl(data.message);
+					}
+				}, 'json');
 		}
 		else if (t.hasClass('update')) {
-				var value = prompt('Enter the value', '');
-			$.post(t.attr('href'), {value:value}, function(data){t.parent().replaceWith(data);});
+			var value = prompt('Enter the value', '');
+			$.post(t.attr('href'), {value:value},
+				function(data) {
+					if (data.success) {
+						t.parent().replaceWith(data.html);
+					}
+					else {
+						$.jGrowl(data.message);
+					}
+				}, 'json');
 		}
 		else if (t.hasClass('remove')) {
-			$.get(t.attr('href'), {}, function(){t.parent().remove();});
+			$.get(t.attr('href'), {},
+				function(data) {
+					if (data.success) {
+						t.parent().remove();
+					}
+					else {
+						$.jGrowl(data.message);
+					}
+				}, 'json');
 		}
 		return false;
 	});
