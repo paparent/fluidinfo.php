@@ -79,9 +79,9 @@ class FluidDB
 			'description' => $description
 		);
 
-		list($status, $response) = $this->post('/namespaces/' . $path, $payload);
+		list($status, $response, $header) = $this->post('/namespaces/' . $path, $payload);
 
-		return ($status == 201) ? $response : $status;
+		return ($status == 201) ? $response : array($status, $header);
 	}
 
 	/**
@@ -103,9 +103,9 @@ class FluidDB
 		if ($returnTags)
 			$params['returnTags'] = 'true';
 
-		list($status, $response) = $this->get('/namespaces/' . $namespace, $params);
+		list($status, $response, $header) = $this->get('/namespaces/' . $namespace, $params);
 
-		return ($status == 200) ? $response : $status;
+		return ($status == 200) ? $response : array($status, $header);
 	}
 
 	/**
@@ -121,9 +121,9 @@ class FluidDB
 			'description' => $description
 		);
 
-		list($status, $response) = $this->put('/namespaces/' . $namespace, $payload);
+		list($status, $response, $header) = $this->put('/namespaces/' . $namespace, $payload);
 
-		return ($status == 204) ? $response : $status;
+		return ($status == 204) ? $response : array($status, $header);
 	}
 
 	/**
@@ -134,9 +134,9 @@ class FluidDB
 	 */
 	public function deleteNamespace($namespace)
 	{
-		list($status, $response) = $this->delete('/namespaces/' . $namespace);
+		list($status, $response, $header) = $this->delete('/namespaces/' . $namespace);
 
-		return ($status == 204) ? $response : $status;
+		return ($status == 204) ? $response : array($status, $header);
 	}
 
 	/* Objects */
@@ -153,9 +153,9 @@ class FluidDB
 			'about' => $about
 		);
 
-		list($status, $response) = $this->post('/objects', $payload);
+		list($status, $response, $header) = $this->post('/objects', $payload);
 
-		return ($status == 201) ? $response : $status;
+		return ($status == 201) ? $response : array($status, $header);
 	}
 
 	/**
@@ -166,9 +166,9 @@ class FluidDB
 	 */
 	public function query($query)
 	{
-		list($status, $response) = $this->get('/objects', array('query' => $query));
+		list($status, $response, $header) = $this->get('/objects', array('query' => $query));
 
-		return ($status == 200) ? $response : $status;
+		return ($status == 200) ? $response : array($status, $header);
 	}
 
 	/**
@@ -184,9 +184,9 @@ class FluidDB
 		if ($showAbout)
 			$params['showAbout'] = 'true';
 
-		list($status, $response) = $this->get('/objects/' . $id, $params);
+		list($status, $response, $header) = $this->get('/objects/' . $id, $params);
 
-		return ($status == 200) ? $response : $status;
+		return ($status == 200) ? $response : array($status, $header);
 	}
 
 	/**
@@ -194,17 +194,12 @@ class FluidDB
 	 *
 	 * @param string $id - UUID of the object
 	 * @param string $tag
-	 * @param string $format
 	 * @return object
 	 */
-	public function getObjectTag($id, $tag, $format = null)
+	public function getObjectTag($id, $tag)
 	{
-		$params = array();
-		if ($format)
-			$params['format'] = $format;
-
-		list($status, $response) = $this->get('/objects/' . $id . '/' . $tag, $params);
-		return ($status == 200) ? $response : $status;
+		list($status, $response, $header) = $this->get('/objects/' . $id . '/' . $tag);
+		return ($status == 200) ? $response : array($status, $header);
 	}
 
 	//TODO:OBJECT HEAD
@@ -221,19 +216,9 @@ class FluidDB
 	 */
 	public function tagObject($id, $tag, $value = null, $valueEncoding = null, $valueType = null)
 	{
-		$payload = array(
-			'value' => $value
-		);
+		list($status, $response, $header) = $this->put('/objects/' . $id . '/' . $tag, $value, null, 'application/vnd.fluiddb.value+json');
 
-		if ($valueEncoding)
-			$payload['valueEncoding'] = $valueEncoding;
-
-		if ($valueType)
-			$payload['valueType'] = $valueType;
-
-		list($status, $response) = $this->put('/objects/' . $id . '/' . $tag, $payload, array('format' => 'json'));
-
-		return ($status == 204) ? $response : $status;
+		return ($status == 204) ? $response : array($status, $header);
 	}
 
 	/**
@@ -245,9 +230,9 @@ class FluidDB
 	 */
 	public function deleteObjectTag($id, $tag)
 	{
-		list($status, $response) = $this->delete('/objects/' . $id . '/' . $tag);
+		list($status, $response, $header) = $this->delete('/objects/' . $id . '/' . $tag);
 
-		return ($status == 204) ? $response : $status;
+		return ($status == 204) ? $response : array($status, $header);
 	}
 
 	/* Permissions */
@@ -269,7 +254,7 @@ class FluidDB
 	 * @param bool $indexed
 	 * @return object
 	 */
-	public function createTag($path, $tag, $description, $indexed = 'false')
+	public function createTag($path, $tag, $description, $indexed = false)
 	{
 		$payload = array(
 			'name' => $tag,
@@ -277,9 +262,9 @@ class FluidDB
 			'indexed' => $indexed
 		);
 
-		list($status, $response) = $this->post('/tags/' . $path, $payload);
+		list($status, $response, $header) = $this->post('/tags/' . $path, $payload);
 
-		return ($status == 201) ? $response : $status;
+		return ($status == 201) ? $response : array($status, $header);
 	}
 
 	/**
@@ -295,9 +280,9 @@ class FluidDB
 		if ($returnDescription)
 			$params['returnDescription'] = 'true';
 
-		list($status, $response) = $this->get('/tags/' . $tag, $params);
+		list($status, $response, $header) = $this->get('/tags/' . $tag, $params);
 
-		return ($status == 200) ? $response : $status;
+		return ($status == 200) ? $response : array($status, $header);
 	}
 
 	/**
@@ -313,9 +298,9 @@ class FluidDB
 			'description' => $description
 		);
 
-		list($status, $response) = $this->put('/tags/' . $tag, $payload);
+		list($status, $response, $header) = $this->put('/tags/' . $tag, $payload);
 
-		return ($status == 204) ? $response : $status;
+		return ($status == 204) ? $response : array($status, $header);
 	}
 
 	/**
@@ -326,9 +311,9 @@ class FluidDB
 	 */
 	public function deleteTag($tag)
 	{
-		list($status, $response) = $this->delete('/tags/' . $tag);
+		list($status, $response, $header) = $this->delete('/tags/' . $tag);
 
-		return ($status == 204) ? $response : $status;
+		return ($status == 204) ? $response : array($status, $header);
 	}
 
 	/* Users */
@@ -341,9 +326,9 @@ class FluidDB
 	 */
 	public function getUser($username)
 	{
-		list($status, $response) = $this->get('/users/' . $username);
+		list($status, $response, $header) = $this->get('/users/' . $username);
 
-		return ($status == 200) ? $response : $status;
+		return ($status == 200) ? $response : array($status, $header);
 	}
 
 	/* Utils */
@@ -381,9 +366,9 @@ class FluidDB
 	 * @param $params
 	 * @return object
 	 */
-	public function put($path, $payload, $params = null)
+	public function put($path, $payload, $params = null, $contenttype = 'application/json')
 	{
-		return $this->call('PUT', $path, $params, $payload);
+		return $this->call('PUT', $path, $params, $payload, $contenttype);
 	}
 
 	/**
@@ -406,7 +391,7 @@ class FluidDB
 	 * @param $payload
 	 * @return object
 	 */
-	public function call($method, $path, $params = null, $payload = null)
+	public function call($method, $path, $params = null, $payload = null, $contenttype = 'application/json')
 	{
 		$url = $this->prefix . $path;
 
@@ -416,16 +401,17 @@ class FluidDB
 
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HEADER, true);
 		
 		if ($this->credentials) {
 			curl_setopt($ch, CURLOPT_USERPWD, $this->credentials);
 		}
 
-		$headers = array('Accept: application/json');
+		$headers = array();
 
 		if ($method != 'GET') {
 			if ($payload) {
-				$headers[] = 'Content-Type: application/json';
+				$headers[] = 'Content-Type: ' . $contenttype;
 				$payload = json_encode($payload);
 				curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
 			}
@@ -437,17 +423,22 @@ class FluidDB
 			}
 		}
 
+
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-		$output = curl_exec($ch);
+		$response = curl_exec($ch);
+		$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+		$header = substr($response, 0, $header_size);
+		$output = substr($response, $header_size);
 		$infos = curl_getinfo($ch);
 		curl_close($ch);
 
-		if ($infos['content_type'] == 'application/json') {
+		if ($infos['content_type'] == 'application/json'
+			OR $infos['content_type'] == 'application/vnd.fluiddb.value+json') {
 			$output = json_decode($output);
 		}
 
-		return array($infos['http_code'], $output);
+		return array($infos['http_code'], $output, $header);
 	}
 
 	/**

@@ -12,12 +12,12 @@ if (isset($_REQUEST['action']) && !empty($_REQUEST['action'])) {
 	switch ($_REQUEST['action']) {
 	case 'removeobjecttag':
 		$ret = $fdb->deleteObjectTag($_REQUEST['oid'], $_REQUEST['tag']);
-		if (!is_numeric($ret)) {
+		if (!is_array($ret)) {
 			echo '{"success":true}';
 		}
 		else {
 			$json = array("success" => false);
-			switch ($ret) {
+			switch ($ret[0]) {
 			case 401: $message = 'Unauthorized'; break;
 			case 404: $message = 'Not found'; break;
 			}
@@ -31,14 +31,14 @@ if (isset($_REQUEST['action']) && !empty($_REQUEST['action'])) {
 			$value = 0 + $value;
 		}
 		$ret = $fdb->tagObject($_REQUEST['oid'], $_REQUEST['tag'], $value);
-		if (!is_numeric($ret)) {
+		if (!is_array($ret)) {
 			$json = array("success" => true);
 			$json['html'] = '<li>' . $_REQUEST['tag'] . ': ' . $value . ' ' . button_tagvalue($_REQUEST['oid'], $_REQUEST['tag']) . '</li>';
 			echo json_encode($json);
 		}
 		else {
 			$json = array("success" => false);
-			switch ($ret) {
+			switch ($ret[0]) {
 			case 401: $message = 'Unauthorized'; break;
 			case 404: $message = 'Tag not found'; break;
 			case 406: $message = 'Not acceptable'; break;
@@ -114,7 +114,7 @@ function showObject($oid)
 		foreach ($objectinfo->tagPaths as $tag) {
 			$tagvalue = $fdb->getObjectTag($oid, $tag);
 			echo '<li>' . $tag . ': ';
-			if (is_string($tagvalue)) {
+			if (is_string($tagvalue) OR is_numeric($tagvalue)) {
 				echo $tagvalue;
 			}
 			else {
