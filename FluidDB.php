@@ -190,6 +190,21 @@ class FluidDB
 	}
 
 	/**
+	 * Get object via about tag
+	 *
+	 * @param string $about - About tag of the object
+	 * @return object
+	 */
+	public function getAbout($about)
+	{
+		$about = urlencode($about);
+
+		list($status, $response, $header) = $this->get('/about/' . $about);
+
+		return ($status == 200) ? $response : array($status, $header);
+	}
+
+	/**
 	 * Get value of object's tag
 	 *
 	 * @param string $id - UUID of the object
@@ -199,6 +214,21 @@ class FluidDB
 	public function getObjectTag($id, $tag)
 	{
 		list($status, $response, $header) = $this->get('/objects/' . $id . '/' . $tag);
+		return ($status == 200) ? $response : array($status, $header);
+	}
+
+	/**
+	 * Get value of object's tag via about tag
+	 *
+	 * @param string $about - About tag of the object
+	 * @param string $tag
+	 * @return object
+	 */
+	public function getAboutTag($about, $tag)
+	{
+		$about = urlencode($about);
+
+		list($status, $response, $header) = $this->get('/about/' . $about . '/' . $tag);
 		return ($status == 200) ? $response : array($status, $header);
 	}
 
@@ -222,6 +252,25 @@ class FluidDB
 	}
 
 	/**
+	 * Tag an object via about tag
+	 *
+	 * @param string $about - About tag of the object
+	 * @param string $tag
+	 * @param string $value
+	 * @param string $valueEncoding
+	 * @param string $valueType
+	 * @return object
+	 */
+	public function tagAbout($about, $tag, $value = null, $valueEncoding = null, $valueType = null)
+	{
+		$about = urlencode($about);
+
+		list($status, $response, $header) = $this->put('/about/' . $about . '/' . $tag, $value, null, 'application/vnd.fluiddb.value+json');
+
+		return ($status == 204) ? $response : array($status, $header);
+	}
+
+	/**
 	 * Remove tag of an object
 	 *
 	 * @param string $id - UUID of the object
@@ -231,6 +280,22 @@ class FluidDB
 	public function deleteObjectTag($id, $tag)
 	{
 		list($status, $response, $header) = $this->delete('/objects/' . $id . '/' . $tag);
+
+		return ($status == 204) ? $response : array($status, $header);
+	}
+
+	/**
+	 * Remove tag of an object via about tag
+	 *
+	 * @param string $about - About tag of the object
+	 * @param string $tag
+	 * @return object
+	 */
+	public function deleteAboutTag($about, $tag)
+	{
+		$about = urlencode($about);
+
+		list($status, $response, $header) = $this->delete('/about/' . $about . '/' . $tag);
 
 		return ($status == 204) ? $response : array($status, $header);
 	}
