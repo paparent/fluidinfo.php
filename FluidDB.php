@@ -442,9 +442,9 @@ class FluidDB
 	 * @param $path
 	 * @return object
 	 */
-	public function delete($path)
+	public function delete($path, $params = null)
 	{
-		return $this->call('DELETE', $path);
+		return $this->call('DELETE', $path, $params);
 	}
 
 	/**
@@ -475,9 +475,10 @@ class FluidDB
 		$headers = array();
 
 		if ($method != 'GET') {
-			if ($payload) {
-				$headers[] = 'Content-Type: ' . $contenttype;
+			if ($payload OR $method == 'PUT') {
 				$payload = json_encode($payload);
+				$headers[] = 'Content-Type: ' . $contenttype;
+				$headers[] = 'Content-Length: ' . strlen($payload);
 				curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
 			}
 			if ($method == 'POST') {
@@ -487,7 +488,6 @@ class FluidDB
 				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 			}
 		}
-
 
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
@@ -515,8 +515,15 @@ class FluidDB
 	private function array2url($params)
 	{
 		$q = array();
-		foreach ($params as $k=>$v) {
-			$q[] = $k . '=' . urlencode($v);
+		foreach ($params as $k => $v) {
+			if (is_array($v)) {
+				foreach ($v as $v2) {
+					$q[] = $k . '=' . urlencode($v2);
+				}
+			}
+			else {
+				$q[] = $k . '=' . urlencode($v);
+			}
 		}
 		return implode('&', $q);
 	}
