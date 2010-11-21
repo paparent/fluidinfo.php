@@ -396,6 +396,61 @@ class FluidDB
 		return ($status == 200) ? $response : array($status, $header);
 	}
 
+	/**
+	 * Get objects and tag-values from a query
+	 *
+	 * @param string $query
+	 * @param string/array $tags
+	 * @return object
+	 */
+	public function getValues($query, $tags)
+	{
+		$params = array('query' => $query, 'tag' => $tags);
+
+		list($status, $response, $header) = $this->get('/values', $params);
+
+		return ($status == 200) ? $response : array($status, $header);
+	}
+
+	/**
+	 * Update tag-values of objects from a query
+	 *
+	 * @param string $query
+	 * @param mixed $tagvalues
+	 * @return object
+	 */
+	public function updateValues($query, $tagvalues)
+	{
+		$params = array(
+			'query' => $query
+		);
+
+		$payload = array();
+		foreach ($tagvalues as $t => $v) {
+			$payload[$t] = array('value' => $v);
+		}
+
+		list($status, $response, $header) = $this->put('/values', $payload, $params);
+
+		return ($status == 204) ? $response : array($status, $header);
+	}
+
+	/**
+	 * Delete tag-values from a query
+	 *
+	 * @param string $query
+	 * @param string/array $tags
+	 * @return object
+	 */
+	public function deleteValues($query, $tags)
+	{
+		$params = array('query' => $query, 'tag' => $tags);
+
+		list($status, $response, $header) = $this->delete('/values', $params);
+
+		return ($status == 204) ? $response : array($status, $header);
+	}
+
 	/* Utils */
 
 	/**
