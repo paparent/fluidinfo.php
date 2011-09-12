@@ -1,7 +1,7 @@
-phpFluidDB
-==========
+fluidinfo.php
+=============
 
-FluidDB (http://www.fluidinfo.com/fluiddb) client for PHP.
+Fluidinfo (http://www.fluidinfo.com/) client for PHP.
 
 Dependencies
 ============

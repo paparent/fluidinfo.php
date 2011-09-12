@@ -1,21 +1,21 @@
 <?php
 
 /**
- * phpFluidDB
+ * fluidinfo.php
  *
- * PHP library to communicate with FluidDB API.
+ * PHP library to communicate with Fluidinfo API.
  *
- * @package phpFluidDB
+ * @package fluidinfo.php
  * @author PA Parent <paparent@gmail.com>
  */
 
 /**
- * Main class for FluidDB handling
+ * Main class for Fluidinfo handling
  *
- * @package phpFluidDB
+ * @package fluidinfo.php
  * @author PA Parent <paparent@gmail.com>
  */
-class FluidDB
+class Fluidinfo
 {
 	/**
 	 * Default prefix
@@ -159,7 +159,7 @@ class FluidDB
 	}
 
 	/**
-	 * Send a query to FluidDB
+	 * Send a query to Fluidinfo
 	 *
 	 * @param string $query
 	 * @return object
@@ -303,7 +303,7 @@ class FluidDB
 	/* Permissions */
 
 	//TODO:DO IT
-	
+
 	/* Policies */
 
 	//TODO:DO IT
@@ -522,7 +522,7 @@ class FluidDB
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_HEADER, true);
-		
+
 		if ($this->credentials) {
 			curl_setopt($ch, CURLOPT_USERPWD, $this->credentials);
 		}
