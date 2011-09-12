@@ -22,7 +22,7 @@ class Fluidinfo
 	 *
 	 * @var string
 	 */
-	private $prefix = 'http://fluiddb.fluidinfo.com';
+	private $prefix = 'https://fluiddb.fluidinfo.com';
 
 	/**
 	 * User credentials
