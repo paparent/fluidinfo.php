@@ -503,7 +503,7 @@ class Fluidinfo
 	}
 
 	/**
-	 * Make a request to FluidDB API
+	 * Make a request to Fluidinfo API
 	 *
 	 * @param $method
 	 * @param $path
